@@ -22,6 +22,9 @@ jobs:
       - name: Build with Maven
         run: mvn clean package  # Construir el proyecto Java con Maven
 
+      - name: List target directory
+        run: ls -la target  # Listar los archivos en el directorio target para verificar la presencia del archivo JAR
+
       - name: Verify JAR file
         run: |
           if [ ! -f target/app.jar ]; then
@@ -106,5 +109,5 @@ jobs:
       - name: Test API Endpoint
         run: |
           sleep 30  # Espera unos segundos para que el servicio esté disponible
-          curl http://<EXTERNAL-IP>/products
+          curl http://aa5421366ef4e451bb22b08d4632caa9-1518851851.us-east-1.elb.amazonaws.com/products
         # Reemplaza <EXTERNAL-IP> con la IP externa de tu servicio
