@@ -1,17 +1,20 @@
 name: Deploy to Kubernetes
 
 on:
-  push:
-    branches:
-      - main  # Ejecutar el workflow cuando haya un push a la rama main
+  workflow_run:
+    workflows: ["Static Analysis"]
+    types:
+      - completed
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Utilizar la última versión de Ubuntu para el runner
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2  # Obtener el código del repositorio
+      uses: actions/checkout@v3
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v2
@@ -19,21 +22,18 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Utiliza el token de sesión si es necesario para tu configuración
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
     - name: Set up Kubernetes CLI
       uses: azure/setup-kubectl@v3
       with:
-        version: 'latest'  # Puedes especificar una versión en lugar de 'latest' para asegurar la compatibilidad futura
+        version: 'latest'
 
     - name: Configure kubectl
       run: aws eks update-kubeconfig --name eks-proyectodevops --region ${{ secrets.AWS_REGION }}
-      # Actualiza el archivo kubeconfig con la configuración del cluster EKS
 
     - name: Verify deployment YAML exists
       run: ls -l ./products-service-deployment.yaml
-      # Verifica que el archivo de despliegue existe. Podrías querer usar `cat` para visualizar su contenido
 
     - name: Deploy to Kubernetes
       run: kubectl apply -f ./products-service-deployment.yaml
-      # Aplica el archivo de despliegue a Kubernetes
