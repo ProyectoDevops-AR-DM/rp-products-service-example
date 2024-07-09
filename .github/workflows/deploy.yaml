@@ -13,18 +13,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
     - name: Set up Kubernetes CLI
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
-    - name: Create .kube directory
-      run: mkdir -p $HOME/.kube
-
     - name: Configure kubectl
-      env:
-        KUBECONFIG: ${{ secrets.KUBECONFIG }}
-      run: echo "${KUBECONFIG}" > $HOME/.kube/config
+      run: aws eks update-kubeconfig --name eks-proyectodevops --region ${{ secrets.AWS_REGION }}
+
+    - name: Verify deployment YAML exists
+      run: ls -l ./products-service-deployment.yaml
 
     - name: Deploy to Kubernetes
       run: kubectl apply -f ./products-service-deployment.yaml
