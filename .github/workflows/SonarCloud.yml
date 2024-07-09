@@ -34,12 +34,10 @@ jobs:
       # Instala las dependencias del proyecto
 
     - name: Set up SonarCloud
-      uses: sonarsource/sonarcloud-github-action@v1.8
-      with:
-        organization: ${{ secrets.SONAR_ORGANIZATION }}
-        token: ${{ secrets.SONAR_TOKEN }}
-        projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-        projectName: ${{ secrets.SONAR_PROJECT_NAME }}
+      run: |
+        echo "${{ secrets.SONAR_TOKEN }}" | docker login --username ${{ secrets.SONAR_ORGANIZATION }} --password-stdin sonarcloud.io
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Run SonarCloud Analysis
       run: |
@@ -48,4 +46,5 @@ jobs:
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      # Ejecuta el análisis de código estático usando SonarCloud
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
