@@ -22,10 +22,25 @@ jobs:
       - name: Build with Maven
         run: mvn clean package  # Construir el proyecto Java con Maven
 
+      - name: Verify JAR file
+        run: |
+          if [ ! -f target/app.jar ]; then
+            echo "JAR file not found!"
+            exit 1
+          fi
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=your_project_key
+            -Dsonar.organization=your_organization
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker:
     runs-on: ubuntu-latest
-
+    needs: build  # Este trabajo se ejecutará solo si el trabajo de build tiene éxito
 
     steps:
       - name: Checkout code
@@ -39,6 +54,14 @@ jobs:
 
       - name: Build Docker image
         run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
+
+      - name: Test Docker image
+        run: |
+          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
+          if [ $? -ne 0 ]; then
+            echo "Docker image test failed!"
+            exit 1
+          fi
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
@@ -79,3 +102,9 @@ jobs:
       - name: Check deployment status
         run: kubectl rollout status deployment/products-service-deployment
         # Verifica el estado del despliegue
+
+      - name: Test API Endpoint
+        run: |
+          sleep 30  # Espera unos segundos para que el servicio esté disponible
+          curl http://<EXTERNAL-IP>/products
+        # Reemplaza <EXTERNAL-IP> con la IP externa de tu servicio
