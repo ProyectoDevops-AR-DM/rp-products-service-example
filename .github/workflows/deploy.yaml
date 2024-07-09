@@ -3,15 +3,17 @@ on:
   push:
     branches:
       - main  # Ejecutar el workflow cuando haya un push a la rama main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest  # Utilizar la última versión de Ubuntu para el runner
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2  # Obtener el código del repositorio
 
     - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v2.2.1
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -19,7 +21,7 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Utiliza el token de sesión si es necesario para tu configuración
 
     - name: Set up Kubernetes CLI
-      uses: azure/setup-kubectl@v3.5.0
+      uses: azure/setup-kubectl@v3
       with:
         version: 'latest'  # Puedes especificar una versión en lugar de 'latest' para asegurar la compatibilidad futura
 
