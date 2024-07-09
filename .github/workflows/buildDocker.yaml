@@ -3,6 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
+      - main
       - release  # Ejecutar el workflow cuando haya un push a la rama main
 
 jobs:
