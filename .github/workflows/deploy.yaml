@@ -1,4 +1,14 @@
-     uses: actions/checkout@v2  # Obtener el código del repositorio
+name: Deploy to Kubernetes
+on:
+  push:
+    branches:
+      - main  # Ejecutar el workflow cuando haya un push a la rama main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Utilizar la última versión de Ubuntu para el runner
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Obtener el código del repositorio
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v2.2.1
