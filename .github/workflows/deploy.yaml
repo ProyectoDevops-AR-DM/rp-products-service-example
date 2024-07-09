@@ -13,6 +13,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2  # Obtener el código del repositorio
 
+    - name: Install SonarScanner
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jre
+        curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+        unzip sonar-scanner-cli.zip
+        export PATH="$PATH:$(pwd)/sonar-scanner-4.6.2.2472-linux/bin"
+        export SONAR_SCANNER_OPTS="-server"
+        sonar-scanner --version
+      env:
+        JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
+
     - name: Set up SonarCloud
       run: |
         sonar-scanner \
@@ -46,15 +58,6 @@ jobs:
     - name: Validate deployment YAML
       run: kubectl apply -f ./products-service-deployment.yaml --dry-run=client
       # Valida el archivo de despliegue antes de aplicarlo
-
-    - name: Run static code analysis
-      run: |
-        sonar-scanner \
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      # Ejecuta el análisis de código estático usando SonarCloud
 
     - name: Run tests
       run: |
