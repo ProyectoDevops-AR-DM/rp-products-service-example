@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v2  # Obtener el código del repositorio
 
     - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v2.2.1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -22,7 +22,7 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Utiliza el token de sesión si es necesario para tu configuración
 
     - name: Set up Kubernetes CLI
-      uses: azure/setup-kubectl@v3
+      uses: azure/setup-kubectl@v3.5.0
       with:
         version: 'latest'  # Puedes especificar una versión en lugar de 'latest' para asegurar la compatibilidad futura
 
@@ -30,10 +30,13 @@ jobs:
       run: aws eks update-kubeconfig --name eks-proyectodevops --region ${{ secrets.AWS_REGION }}
       # Actualiza el archivo kubeconfig con la configuración del cluster EKS
 
-    - name: Verify deployment YAML exists
-      run: ls -l ./products-service-deployment.yaml
-      # Verifica que el archivo de despliegue existe. Podrías querer usar `cat` para visualizar su contenido
+    - name: Validate deployment YAML
+      run: kubectl apply -f ./products-service-deployment.yaml --dry-run=client
+      # Valida el archivo de despliegue antes de aplicarlo
 
     - name: Deploy to Kubernetes
       run: kubectl apply -f ./products-service-deployment.yaml
       # Aplica el archivo de despliegue a Kubernetes
+
+    - name: Check deployment status
+      run: kubectl rollout status deployment/products-service-deployment
