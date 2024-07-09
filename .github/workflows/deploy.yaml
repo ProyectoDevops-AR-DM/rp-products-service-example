@@ -21,6 +21,12 @@ jobs:
     - name: Build with Maven
       run: mvn clean package  # Construir el proyecto Java con Maven
 
+    - name: Install SonarCloud Scanner
+      run: |
+        curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+        unzip sonar-scanner-cli.zip
+        export PATH=$PATH:$(pwd)/sonar-scanner-4.7.0.2747-linux/bin
+
     - name: Run SonarCloud analysis
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
