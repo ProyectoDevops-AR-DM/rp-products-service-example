@@ -1,4 +1,4 @@
-name: Build, Push and Deploy to Kubernetes
+name: Build, Analyze, Push and Deploy to Kubernetes
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main  # Ejecutar el workflow cuando haya un push a la rama main
 
 jobs:
-  build-and-push:
+  build-analyze-and-push:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -20,6 +20,15 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean package  # Construir el proyecto Java con Maven
+
+    - name: Setup SonarCloud
+      uses: sonarsource/sonarcloud-github-action@v1
+      with:
+        args: >
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
@@ -35,7 +44,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest  # Utilizar la última versión de Ubuntu para el runner
-    needs: build-and-push  # Este trabajo se ejecutará solo si build-and-push tiene éxito
+    needs: build-analyze-and-push  # Este trabajo se ejecutará solo si build-and-push tiene éxito
     steps:
     - name: Checkout code
       uses: actions/checkout@v2  # Obtener el código del repositorio
