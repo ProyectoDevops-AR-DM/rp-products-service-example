@@ -13,15 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2  # Obtener el código del repositorio
 
-    - name: Install SonarScanner
+    - name: Install Java and SonarScanner
       run: |
         sudo apt-get update
         sudo apt-get install -y openjdk-11-jre
         curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
         unzip sonar-scanner-cli.zip
-        export PATH="$PATH:$(pwd)/sonar-scanner-4.6.2.2472-linux/bin"
-        export SONAR_SCANNER_OPTS="-server"
-        sonar-scanner --version
+        echo "export PATH=\$PATH:$(pwd)/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_ENV
+        echo "export SONAR_SCANNER_OPTS='-server'" >> $GITHUB_ENV
       env:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
