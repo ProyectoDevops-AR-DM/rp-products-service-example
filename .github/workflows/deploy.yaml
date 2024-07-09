@@ -14,12 +14,17 @@ jobs:
       uses: actions/checkout@v2  # Obtener el código del repositorio
 
     - name: Set up SonarCloud
-      uses: sonarsource/sonarcloud-github-action@master
-      with:
-        organization: ${{ secrets.SONAR_ORGANIZATION }}
-        token: ${{ secrets.SONAR_TOKEN }}
-        projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-        projectName: ${{ secrets.SONAR_PROJECT_NAME }}
+      run: |
+        sonar-scanner \
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+        SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+        SONAR_PROJECT_NAME: ${{ secrets.SONAR_PROJECT_NAME }}
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v1
