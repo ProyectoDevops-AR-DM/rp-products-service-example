@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    needs: [SonarCloud]
+    needs: []
     runs-on: ubuntu-latest  # Utilizar la última versión de Ubuntu para el runner
 
     steps:
