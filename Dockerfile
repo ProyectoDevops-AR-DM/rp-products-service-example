@@ -8,4 +8,4 @@ WORKDIR /app
 COPY target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar /app/products-service-example.jar
 
 # Comando para ejecutar la aplicación
-CMD ["java", "-jar", "my-java-app.jar"]
+CMD ["java", "-jar", "products-service-example.jar"]
