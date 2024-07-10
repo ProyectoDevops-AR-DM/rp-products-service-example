@@ -58,7 +58,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build Docker image
-        run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest --build-arg JAR_FILE=target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar
+        run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest --build-arg JAR_FILE=/app/app.jar
 
       - name: Test Docker image
         run: |
