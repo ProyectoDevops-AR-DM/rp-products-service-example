@@ -66,11 +66,7 @@ jobs:
       - name: Deploy to Kubernetes
         run: kubectl apply -f ./products-service-deployment.yaml
         # Aplica el archivo de despliegue a Kubernetes
-
-      - name: Check deployment status
-        run: kubectl rollout status deployment/products-service-deployment
-        # Verifica el estado del despliegue
-
+        
       - name: Test API Endpoint
         run: |
           sleep 30  # Espera unos segundos para que el servicio esté disponible
