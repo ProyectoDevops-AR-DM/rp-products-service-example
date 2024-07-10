@@ -49,6 +49,10 @@ jobs:
       - name: Build Docker image
         run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
 
+      - name: Test Docker image
+        run: |
+          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest java -jar /app.jar
+        # Verifica si el archivo JAR se ejecuta correctamente dentro del contenedor
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
