@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copiar el archivo JAR al contenedor
-COPY target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar /app.jar
+COPY ./target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar /app.jar
 
 # Exponer el puerto en el que corre la aplicación
 EXPOSE 8080
