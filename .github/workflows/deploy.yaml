@@ -52,10 +52,7 @@ jobs:
       - name: Test Docker image
         run: |
           docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
-          if [ $? -ne 0 ]; then
-            echo "Docker image test failed!"
-            exit 1
-          fi
+       
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
