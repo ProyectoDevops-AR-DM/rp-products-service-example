@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: products-service
-        image: your-docker-username/products-service-example:latest
+        image: andrihurabaquino/products-service-example:latest
         ports:
         - containerPort: 8080
         resources:
