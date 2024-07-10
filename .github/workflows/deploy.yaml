@@ -31,7 +31,7 @@ jobs:
             echo "JAR file not found!"
             exit 1
           fi
-
+          
   docker:
     runs-on: ubuntu-latest
     needs: build  # Este trabajo se ejecutará solo si el trabajo de build tiene éxito
@@ -51,8 +51,8 @@ jobs:
 
       - name: Test Docker image
         run: |
-          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
-       
+          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest java -jar /app.jar
+        # Verifica si el archivo JAR se ejecuta correctamente dentro del contenedor
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
