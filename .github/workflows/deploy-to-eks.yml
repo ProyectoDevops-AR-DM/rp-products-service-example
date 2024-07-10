@@ -75,5 +75,5 @@ jobs:
         run: |
           sleep 30  # Espera unos segundos para que el servicio esté disponible
           EXTERNAL_IP=$(kubectl get svc products-service-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          curl http://$EXTERNAL_IP/products
+          curl http://a421b61ad11ad44c8b157f86e3e7f2a2-432921756.us-east-1.elb.amazonaws.com/products
         # Reemplaza <EXTERNAL-IP> con la IP externa de tu servicio
