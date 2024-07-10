@@ -23,7 +23,7 @@ jobs:
         run: ls -la
 
       - name: Build with Maven
-        run: mvn clean package -X  # Construir el proyecto Java con Maven en modo debug
+        run: mvn clean package  # Construir el proyecto Java con Maven
 
       - name: List root directory after build
         run: ls -la
@@ -47,6 +47,7 @@ jobs:
             exit 1
           fi
           echo "JAR file found at $JAR_FILE"
+          echo "JAR_FILE=$JAR_FILE" >> $GITHUB_ENV  # Exportar la variable JAR_FILE para usarla en otros trabajos
 
   docker:
     runs-on: ubuntu-latest
@@ -64,9 +65,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          JAR_FILE=$(find . -name "products-service-example-0.0.1-SNAPSHOT-spring-boot.jar" | head -n 1)
           if [ -z "$JAR_FILE" ]; then
-            echo "JAR file not found, cannot build Docker image!"
+            echo "JAR file environment variable not set, cannot build Docker image!"
             exit 1
           fi
           docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest --build-arg JAR_FILE=$JAR_FILE
