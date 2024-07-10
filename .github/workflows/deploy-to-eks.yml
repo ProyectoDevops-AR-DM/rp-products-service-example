@@ -23,17 +23,17 @@ jobs:
         run: mvn clean package  # Construir el proyecto Java con Maven
 
       - name: List target directory
-        run: |
-          echo "Listing target directory"
-          ls -la target  # Listar los archivos en el directorio target para verificar la presencia del archivo JAR
+        run: ls -la target  # Listar los archivos en el directorio target para verificar la presencia del archivo JAR
 
       - name: Verify JAR file
         run: |
           if [ ! -f target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar ]; then
             echo "JAR file not found!"
             exit 1
+          else
+            echo "JAR file found!"
+            file target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar
           fi
-          echo "JAR file found!"
 
       - name: Save target directory to artifact
         uses: actions/upload-artifact@v3
@@ -58,10 +58,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build Docker image
-        run: docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest java -jar /app.jar
+        run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest --build-arg JAR_FILE=target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar
 
       - name: Test Docker image
-        run: docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
+        run: |
+          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
