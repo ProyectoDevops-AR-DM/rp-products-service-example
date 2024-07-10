@@ -28,15 +28,25 @@ jobs:
       - name: List root directory after build
         run: ls -la
 
-      - name: List target directory
-        run: ls -la target  # Listar los archivos en el directorio target para verificar la presencia del archivo JAR
+      - name: Find target directory
+        run: find . -type d -name target  # Buscar el directorio target en todo el sistema de archivos
+
+      - name: List target directory if exists
+        run: |
+          if [ -d target ]; then
+            ls -la target  # Listar los archivos en el directorio target
+          else
+            echo "target directory not found!"
+          fi
 
       - name: Verify JAR file
         run: |
-          if [ ! -f target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar ]; then
+          JAR_FILE=$(find . -name "products-service-example-0.0.1-SNAPSHOT-spring-boot.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
             echo "JAR file not found!"
             exit 1
           fi
+          echo "JAR file found at $JAR_FILE"
 
   docker:
     runs-on: ubuntu-latest
@@ -53,11 +63,16 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build Docker image
-        run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
+        run: |
+          JAR_FILE=$(find . -name "products-service-example-0.0.1-SNAPSHOT-spring-boot.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "JAR file not found, cannot build Docker image!"
+            exit 1
+          fi
+          docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest --build-arg JAR_FILE=$JAR_FILE
 
       - name: Test Docker image
-        run: |
-          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
+        run: docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/products-service-example:latest
