@@ -1,11 +1,14 @@
-# Usa una imagen base de Java
-FROM openjdk:17-jdk-alpine
+# Usar una imagen base de OpenJDK
+FROM openjdk:17-jdk-slim
 
-# Crea un directorio de trabajo en el contenedor
+# Establecer el directorio de trabajo en /app
 WORKDIR /app
 
-# Copia el archivo JAR desde el directorio target al contenedor
-COPY target/products-service-example-0.0.1-SNAPSHOT.jar /app.jar
+# Copiar el archivo JAR al contenedor
+COPY target/products-service-example-0.0.1-SNAPSHOT-spring-boot.jar /app.jar
 
-# Comando para ejecutar el archivo JAR
+# Exponer el puerto en el que corre la aplicación
+EXPOSE 8080
+
+# Ejecutar la aplicación Java
 ENTRYPOINT ["java", "-jar", "/app.jar"]
