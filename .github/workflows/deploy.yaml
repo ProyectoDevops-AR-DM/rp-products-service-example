@@ -1,4 +1,4 @@
-name: Build, SonarCloud, Push and Deploy to Kubernetes
+name: Build, Push Docker Image and Deploy to Kubernetes
 
 on:
   push:
@@ -31,15 +31,6 @@ jobs:
             echo "JAR file not found!"
             exit 1
           fi
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker:
     runs-on: ubuntu-latest
