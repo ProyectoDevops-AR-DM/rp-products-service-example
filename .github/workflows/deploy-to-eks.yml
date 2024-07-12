@@ -1,9 +1,9 @@
-name: CI Build and Deploy
+name: CI Build and Deploy - develop
 
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   build:
@@ -22,6 +22,14 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          organization: ${{ secrets.SONAR_ORGANIZATION }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -29,10 +37,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/products-service-example:latest
+        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/products-service-example-develop:latest
 
       - name: Push Docker image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/products-service-example:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/products-service-example-develop:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -56,7 +64,7 @@ jobs:
           version: 'latest'  # Puedes especificar una versión en lugar de 'latest' para asegurar la compatibilidad futura
 
       - name: Configure kubectl
-        run: aws eks update-kubeconfig --name eks-proyectodevops --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name eks-proyectodevops-develop --region ${{ secrets.AWS_REGION }}
         # Actualiza el archivo kubeconfig con la configuración del cluster EKS
 
       - name: Validate deployment YAML
@@ -71,5 +79,5 @@ jobs:
         run: |
           sleep 30  # Espera unos segundos para que el servicio esté disponible
           EXTERNAL_IP=$(kubectl get svc products-service-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          curl http://a421b61ad11ad44c8b157f86e3e7f2a2-432921756.us-east-1.elb.amazonaws.com/products
+          curl http://a421b61ad11ad44c8b157f86e3e7f2a2-432921756.us-east-1.elb.amazonaws.com/orders
         # Reemplaza <EXTERNAL-IP> con la IP externa de tu servicio
