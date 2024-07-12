@@ -36,6 +36,9 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: Build with Maven
+        run: mvn clean package
+
       - name: Install SonarScanner
         run: npm install -g sonar-scanner
 
