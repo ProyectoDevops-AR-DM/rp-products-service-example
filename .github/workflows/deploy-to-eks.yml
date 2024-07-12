@@ -42,11 +42,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Java 11
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '11'
+          java-version: '17'
 
       - name: Install SonarScanner
         run: npm install -g sonar-scanner
