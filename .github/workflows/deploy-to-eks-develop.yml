@@ -22,6 +22,14 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          organization: ${{ secrets.SONAR_ORGANIZATION }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
