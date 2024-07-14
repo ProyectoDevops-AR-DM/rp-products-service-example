@@ -4,10 +4,15 @@ on:
   push:
     branches:
       - main
+      - Develop
+      - Release
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [main, Develop, Release]
 
     steps:
       - name: Checkout repository
@@ -25,6 +30,9 @@ jobs:
   sonarcloud:
     runs-on: ubuntu-latest
     needs: build
+    strategy:
+      matrix:
+        branch: [main, Develop, Release]
 
     steps:
       - name: Checkout code
@@ -57,6 +65,9 @@ jobs:
   build_and_deploy_dockerhub:
     runs-on: ubuntu-latest
     needs: [sonarcloud, build]
+    strategy:
+      matrix:
+        branch: [main, Develop, Release]
 
     steps:
       - name: Checkout repository
@@ -78,18 +89,21 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/products-service-example:latest
+        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/orders-service-example-${{ matrix.branch }}:latest
 
       - name: Push Docker image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/products-service-example:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/orders-service-example-${{ matrix.branch }}:latest
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_deploy_dockerhub  # Este trabajo se ejecutará solo si el trabajo build_and_deploy_dockerhub tiene éxito
+    needs: build_and_deploy_dockerhub
+    strategy:
+      matrix:
+        branch: [main, Develop, Release]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # Obtener el código del repositorio
+        uses: actions/checkout@v2
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
@@ -102,23 +116,18 @@ jobs:
       - name: Set up Kubernetes CLI
         uses: azure/setup-kubectl@v3
         with:
-          version: 'latest'  # Puedes especificar una versión en lugar de 'latest' para asegurar la compatibilidad futura
+          version: 'latest'
 
       - name: Configure kubectl
-        run: aws eks update-kubeconfig --name eks-proyectodevops --region ${{ secrets.AWS_REGION }}
-        # Actualiza el archivo kubeconfig con la configuración del cluster EKS
+        run: aws eks update-kubeconfig --name eks-proyectodevops-${{ matrix.branch }} --region ${{ secrets.AWS_REGION }}
 
       - name: Validate deployment YAML
-        run: kubectl apply -f ./products-service-deployment.yaml --dry-run=client
-        # Valida el archivo de despliegue antes de aplicarlo
+        run: kubectl apply -f ./orders-service-deployment-${{ matrix.branch }}.yaml --dry-run=client
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f ./products-service-deployment.yaml
-        # Aplica el archivo de despliegue a Kubernetes
+        run: kubectl apply -f ./orders-service-deployment-${{ matrix.branch }}.yaml
         
       - name: Test API Endpoint
         run: |
-          sleep 30  # Espera unos segundos para que el servicio esté disponible
-          EXTERNAL_IP=$(kubectl get svc products-service-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          curl http://a421b61ad11ad44c8b157f86e3e7f2a2-432921756.us-east-1.elb.amazonaws.com/products
-        # Reemplaza <EXTERNAL-IP> con la IP externa de tu servicio
+          sleep 30
+          curl http://<Ip-ambiente-${{ matrix.branch }}> /products
