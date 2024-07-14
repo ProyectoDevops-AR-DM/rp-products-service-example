@@ -4,15 +4,15 @@ on:
   push:
     branches:
       - main
-      - Develop
-      - Release
+      - develop
+      - release
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        branch: [main, Develop, Release]
+        branch: [main, develop, release]
 
     steps:
       - name: Checkout repository
@@ -32,7 +32,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        branch: [main, Develop, Release]
+        branch: [main, develop, release]
 
     steps:
       - name: Checkout code
@@ -67,7 +67,7 @@ jobs:
     needs: [sonarcloud, build]
     strategy:
       matrix:
-        branch: [main, Develop, Release]
+        branch: [main, develop, release]
 
     steps:
       - name: Checkout repository
@@ -99,7 +99,7 @@ jobs:
     needs: build_and_deploy_dockerhub
     strategy:
       matrix:
-        branch: [main, Develop, Release]
+        branch: [main, develop, release]
 
     steps:
       - name: Checkout code
