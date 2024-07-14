@@ -1,0 +1,82 @@
+{
+	"info": {
+		"_postman_id": "d6fe35e4-4270-49cf-80c0-50ec70dce12b",
+		"name": "ProductsCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19595236"
+	},
+	"item": [
+		{
+			"name": "Obtener productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{linkService}}//products",
+					"host": [
+						"{{linkService}}"
+					],
+					"path": [
+						"",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener un producto",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{linkService}}/products/111",
+					"host": [
+						"{{linkService}}"
+					],
+					"path": [
+						"products",
+						"111"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener un producto Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{linkService}}/products/112",
+					"host": [
+						"{{linkService}}"
+					],
+					"path": [
+						"products",
+						"112"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener un producto Copy 2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{linkService}}/products/124",
+					"host": [
+						"{{linkService}}"
+					],
+					"path": [
+						"products",
+						"124"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
