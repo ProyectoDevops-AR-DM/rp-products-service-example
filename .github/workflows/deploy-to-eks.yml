@@ -152,4 +152,4 @@ jobs:
         env:
           SERVICE_URL: ${{ env.SERVICE_URL }}
         run: |
-          newman run ./Postman/CollectionOrders.postman_collection.json --env-var linkService=${{ env.SERVICE_URL }}
+          newman run ./Postman/CollectionProducts.postman_collection.json --env-var linkService=${{ env.SERVICE_URL }}
